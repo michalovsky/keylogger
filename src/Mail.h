@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace keylogger
+namespace keylogger::mail
 {
 struct Mail
 {

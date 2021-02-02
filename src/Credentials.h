@@ -1,6 +1,6 @@
 #pragma once
 
-namespace keylogger
+namespace keylogger::mail
 {
 struct Credentials
 {
