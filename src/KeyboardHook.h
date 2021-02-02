@@ -7,7 +7,7 @@
 #include "DefaultFileSystemAccess.h"
 #include "Helper.h"
 #include "KeyBinding.h"
-#include "MailSender.h"
+#include "PowerShellMailSender.h"
 #include "Timer.h"
 #include "windows.h"
 

