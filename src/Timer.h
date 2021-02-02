@@ -12,21 +12,18 @@ class Timer
 public:
     Timer() = default;
     Timer(std::function<void(void)> f);
-    Timer(std::function<void(void)> f, const unsigned long i, const long repeat = infinite);
+    Timer(std::function<void(void)> f, unsigned long i, long repeat = infinite);
 
     void start(bool async = true);
     void stop();
     bool isAlive() const;
     void setTimerCallback(const std::function<void(void)>& f);
-    void setTotalNumberOfCalls(const long num);
-    void setInterval(const unsigned long i);
+    void setTotalNumberOfCalls(long num);
+    void setInterval(unsigned long i);
 
     static const long infinite{-1};
 
 private:
-    void sleepAndRun();
-    void threadFunc();
-
     std::thread thread;
     bool alive{false};
     long totalNumberOfCalls{-1};

@@ -10,6 +10,6 @@ class MailSender
 public:
     virtual ~MailSender() = default;
 
-    virtual bool sendMail(const Mail&, const Credentials&) const = 0;
+    virtual bool sendMail(const Mail&, const Credentials&) = 0;
 };
 }

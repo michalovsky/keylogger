@@ -1,6 +1,5 @@
 #include "DefaultFileSystemAccess.h"
 
-#include <experimental/filesystem>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -19,8 +18,6 @@ enum class Result
 
 Result write(std::ofstream& fileStream, const std::string& data);
 }
-
-namespace fs = std::experimental::filesystem;
 
 void DefaultFileSystemAccess::tryToWrite(const std::string& absolutePath, const std::string& content) const
 {
@@ -61,7 +58,13 @@ std::string DefaultFileSystemAccess::tryToReadContent(const std::string& absolut
 
 void DefaultFileSystemAccess::createDirectory(const std::string& absolutePath) const
 {
-    fs::create_directory(absolutePath);
+    std::filesystem::create_directory(absolutePath);
+}
+
+bool DefaultFileSystemAccess::exists(const std::string& absolutePath) const
+{
+    return std::filesystem::exists(absolutePath);
+
 }
 
 namespace

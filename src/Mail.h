@@ -8,7 +8,6 @@ namespace keylogger::mail
 struct Mail
 {
     std::string emailSourceAddress;
-    std::string emailCopyToAddress;
     std::string emailTargetAddress;
     std::string subject;
     std::string body;

