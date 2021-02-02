@@ -1,3 +1,3 @@
 # keylogger
 
-Keylogger working on Windows 7/8/10
+Keylogger that works on Windows
