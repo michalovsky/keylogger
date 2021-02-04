@@ -23,6 +23,18 @@ bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credent
         return false;
     }
 
+// Code for multiple attachments
+//    std::string attachmentsAsString;
+//    if (auto begin = mail.attachments.begin(); begin != mail.attachments.end())
+//    {
+//        attachmentsAsString = *begin;
+//        for (auto attachmentIter = std::next(begin); attachmentIter != mail.attachments.end();
+//             ++attachmentIter)
+//        {
+//            attachmentsAsString += "::" + *attachmentIter;
+//        }
+//    }
+
     std::string attachmentsAsString = mail.attachment ? *mail.attachment : "";
     std::string parameters = "-ExecutionPolicy ByPass -File \"" + scriptCreator->getScriptFilePath() +
                              "\" -Subj \"" + stringReplace(mail.subject, "\"", "\\\"") + "\" -Body \"" +
@@ -60,8 +72,6 @@ bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credent
     };
 
     (void)std::async(std::launch::async, terminateScriptProcess);
-
-    utils::appendLog("Mail script code: " + std::to_string((int)exitCode));
 
     return static_cast<int>(exitCode) == successCodeFromScript;
 }

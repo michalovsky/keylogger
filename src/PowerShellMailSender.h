@@ -7,7 +7,6 @@
 
 #include "DefaultFileSystemAccess.h"
 #include "PowerShellSendMailScriptCreator.h"
-#include "Helper.h"
 #include "MailSender.h"
 
 namespace keylogger::mail

