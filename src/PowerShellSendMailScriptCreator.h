@@ -1,9 +1,10 @@
 #pragma once
 
+#include <memory>
+
+#include "Credentials.h"
 #include "FileSystemAccess.h"
 #include "Mail.h"
-#include "Credentials.h"
-#include <memory>
 
 namespace keylogger::mail
 {

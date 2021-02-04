@@ -64,7 +64,6 @@ void DefaultFileSystemAccess::createDirectory(const std::string& absolutePath) c
 bool DefaultFileSystemAccess::exists(const std::string& absolutePath) const
 {
     return std::filesystem::exists(absolutePath);
-
 }
 
 namespace

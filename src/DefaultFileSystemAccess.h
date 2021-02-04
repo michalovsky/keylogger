@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base64Encryptor.h"
 #include "FileSystemAccess.h"
 
 namespace keylogger
@@ -15,4 +14,3 @@ public:
     bool exists(const std::string& absolutePath) const override;
 };
 }
-

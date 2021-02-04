@@ -1,7 +1,8 @@
 #pragma once
 
-#include "MailSender.h"
 #include <vector>
+
+#include "MailSender.h"
 
 namespace keylogger::mail
 {

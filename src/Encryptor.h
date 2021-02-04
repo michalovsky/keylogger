@@ -9,6 +9,6 @@ class Encryptor
 public:
     virtual ~Encryptor() = default;
 
-    virtual std::string encrypt(std::string) const = 0;
+    virtual std::string encrypt(const std::string&) const = 0;
 };
 }

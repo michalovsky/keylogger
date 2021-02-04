@@ -20,6 +20,6 @@ std::string TimestampFetcher::getFormattedTime(const Timestamp& timestamp, const
 {
     return std::string(timestamp.hour < 10 ? "0" : "") + std::to_string(timestamp.hour) + separator +
            std::string(timestamp.minutes < 10 ? "0" : ".") + std::to_string(timestamp.minutes) + separator +
-           std::string(timestamp.seconds < 10 ? separator : "") + std::to_string(timestamp.seconds);
+           std::string(timestamp.seconds < 10 ? "0" : "") + std::to_string(timestamp.seconds);
 }
 }

@@ -53,10 +53,10 @@ bool CurlMailSender::sendMail(const Mail& mail, const Credentials& credentials)
         if (mail.attachment)
         {
             std::cerr << "File attachment not supported";
-//            curl_mime* mime = curl_mime_init(curl);
-//            curl_mimepart* part = curl_mime_addpart(mime);
-//            curl_mime_filedata(part, mail.attachment->c_str());
-//            curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+            //            curl_mime* mime = curl_mime_init(curl);
+            //            curl_mimepart* part = curl_mime_addpart(mime);
+            //            curl_mime_filedata(part, mail.attachment->c_str());
+            //            curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
         }
 
         curl_easy_setopt(curl, CURLOPT_READFUNCTION, readEmailPayload);
@@ -98,12 +98,9 @@ size_t CurlMailSender::readEmailPayload(char* ptr, size_t size, size_t nmemb, vo
         return 0;
     }
 
-    static const char* payload_text[] = {currentFormattedMail[0].c_str(),
-                                         currentFormattedMail[1].c_str(),
-                                         currentFormattedMail[2].c_str(),
-                                         currentFormattedMail[3].c_str(),
-                                         currentFormattedMail[4].c_str(),
-                                         NULL};
+    static const char* payload_text[] = {currentFormattedMail[0].c_str(), currentFormattedMail[1].c_str(),
+                                         currentFormattedMail[2].c_str(), currentFormattedMail[3].c_str(),
+                                         currentFormattedMail[4].c_str(), NULL};
     data = payload_text[upload_ctx->lines_read];
 
     if (data)

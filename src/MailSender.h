@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Mail.h"
 #include "Credentials.h"
+#include "Mail.h"
 
 namespace keylogger::mail
 {
